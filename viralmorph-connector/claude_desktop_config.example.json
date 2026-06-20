@@ -1,0 +1,14 @@
+{
+  "_comment": "Copy the 'viralmorph' block into your Claude Desktop config (Settings -> Developer -> Edit Config, or claude_desktop_config.json). Replace the absolute path with the real path to dist/index.js on your machine, then fully restart Claude Desktop.",
+  "mcpServers": {
+    "viralmorph": {
+      "command": "node",
+      "args": ["/absolute/path/to/viralmorph-connector/dist/index.js"],
+      "env": {
+        "LLM_PROVIDER": "mock",
+        "BROWSER_PROFILE_DIR": "/absolute/path/to/viralmorph-connector/browser_profiles/default",
+        "BROWSER_HEADLESS": "false"
+      }
+    }
+  }
+}
