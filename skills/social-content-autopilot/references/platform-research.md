@@ -21,9 +21,10 @@ sources support principles, not guaranteed reach.
   recommendation. Check Account Status before treating reach as only a creative
   problem.
 
-Operational inference: build discovery creative for attention and continued
-viewing, and build useful/relatable content people willingly send or save. Do
-not claim a fixed signal weight; validate with current Instagram Insights.
+Operational inference for this project's image-only scope: build discovery
+creative that stops the scroll and rewards reading or swiping, then make it
+useful or relatable enough to send or save. Do not claim a fixed signal weight;
+validate with current Instagram Insights.
 
 ## LinkedIn
 

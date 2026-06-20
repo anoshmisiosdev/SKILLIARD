@@ -4,6 +4,8 @@ Join a relevant public conversation with one crisp idea. Optimize for replies,
 reposts/quotes, follows, or clicks from the intended community—not generic
 provocation.
 
+Read `references/x-strategy.md` before drafting.
+
 ## Draft rules
 
 1. Make the first clause carry the claim, useful fact, tension, or news value.
@@ -29,7 +31,8 @@ provocation.
 
 Choose `single`, `thread`, `quote-post commentary`, or `reply` and say why. For
 a thread, number the posts and validate each one separately. Include the media
-brief, link/mention verification needs, and primary metric.
+brief, link/mention verification needs, primary metric, virality hypothesis,
+and one controlled next test from `references/x-strategy.md`.
 
 Validate a standalone post with:
 `python scripts/check.py --platform x --text "<post>"`

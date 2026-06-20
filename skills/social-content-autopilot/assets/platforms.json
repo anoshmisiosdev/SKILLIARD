@@ -30,7 +30,7 @@
     "hashtag_range": [0, 5],
     "requires_media": true,
     "favors_media": true,
-    "favors_video": true,
+    "favors_video": false,
     "tone": "visual-first, audience-specific, original, and useful",
     "best_times": "derive from Instagram Insights; otherwise test an audience-active window",
     "cadence": "use personalized Professional Dashboard guidance and account analytics",

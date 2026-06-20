@@ -1,8 +1,10 @@
 # social-content-autopilot
 
-A social-content skill focused on Instagram, LinkedIn, and X. It turns verified
-product context into a distinct native post for each platform, plus a creative
-brief, controlled-test hook, publishing handoff, and measurement plan.
+A social-content skill focused on Instagram image posts, LinkedIn, and X. It
+turns verified product context into a distinct native post for each platform,
+plus a creative brief, controlled-test hook, publishing handoff, and measurement
+plan. Instagram produces only single-image or image-carousel feed posts with
+descriptions; it does not propose Reels or video.
 
 The skill optimizes for qualified organic reach rather than promising
 “virality.” LinkedIn defaults to a high-drama, r/LinkedInLunatics-inspired

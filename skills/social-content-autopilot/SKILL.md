@@ -1,6 +1,6 @@
 ---
 name: social-content-autopilot
-description: Transform product context, announcements, articles, and rough ideas into truthful, platform-native Instagram, LinkedIn, and X content optimized for qualified organic reach. Use when drafting, adapting, auditing, testing, or preparing social posts and publishing handoffs for one or more of those platforms, including hooks, captions, threads, carousels, Reels scripts, media briefs, calls to action, and measurement plans.
+description: Transform product context, announcements, articles, and rough ideas into truthful, platform-native Instagram image posts, LinkedIn posts, and X posts optimized for qualified organic reach. Use when drafting, adapting, auditing, testing, or preparing social posts and publishing handoffs for one or more of those platforms, including hooks, descriptions, threads, image carousels, media briefs, calls to action, virality hypotheses, and measurement plans.
 ---
 
 # Social Content Autopilot
@@ -30,10 +30,12 @@ statistic, credential, urgency, or product capability.
 1. Define one audience, one promise, one proof point, and one desired action.
 2. Choose one primary success metric from the objective table below.
 3. Read every requested platform file before drafting:
-   - Instagram: `formats/instagram.md`
-   - LinkedIn: `formats/linkedin.md`; also read
+   - Instagram: `formats/instagram.md` and
+     `references/instagram-strategy.md`
+   - LinkedIn: `formats/linkedin.md` and
+     `references/linkedin-strategy.md`; also read
      `references/linkedin-lunatics.md` for high-drama mode
-   - X: `formats/x.md`
+   - X: `formats/x.md` and `references/x-strategy.md`
 4. Draft around the strongest specific truth in the source. Put context before
    promotion and make the product the mechanism, not the entire story.
 5. Run the quality gate and revise weak drafts.
@@ -123,6 +125,8 @@ request to draft or optimize.
 - `scripts/check.py` — hard-limit and heuristic linting.
 - `assets/platforms.json` — validator configuration.
 - `references/platform-research.md` — evidence, source dates, and uncertainty.
+- `references/{instagram,linkedin,x}-strategy.md` — detailed platform-specific
+  virality models, archetypes, ranking implications, metrics, and experiments.
 - `references/linkedin-lunatics.md` — observed LinkedIn high-drama mechanics and
   truth-preserving transformations.
 - `references/competitor-research.md` and `scripts/competitor_research.py` —

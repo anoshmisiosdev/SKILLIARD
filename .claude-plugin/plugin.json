@@ -1,7 +1,7 @@
 {
   "name": "social-content-autopilot",
-  "version": "0.3.0",
-  "description": "Transforms product context into truthful, platform-native Instagram, LinkedIn, and X content with creative briefs, publishing handoffs, and measurement plans.",
+  "version": "0.4.0",
+  "description": "Transforms product context into researched Instagram image posts, LinkedIn posts, and X posts with creative briefs, virality hypotheses, publishing handoffs, and measurement plans.",
   "author": {
     "name": "anoshmisiosdev",
     "email": "riyananosh@gmail.com"

@@ -5,7 +5,8 @@ catalogued in r/LinkedInLunatics: a disruptive opener, staccato pacing, narrativ
 tension, a hard pivot to a professional lesson, and an ending that invites a
 position. Keep the substance credible even when the presentation is theatrical.
 
-Read `references/linkedin-lunatics.md` before drafting this mode.
+Read `references/linkedin-strategy.md` and `references/linkedin-lunatics.md`
+before drafting this mode.
 
 ## High-drama structure
 
@@ -67,6 +68,8 @@ Include:
 4. the verified fact supporting the hook
 5. the debate prompt and why a qualified reader can answer it
 6. primary analytics: out-of-network reach plus the objective-specific metric
+7. one virality hypothesis from `references/linkedin-strategy.md` and the
+   controlled next test
 
 If the user explicitly asks for maximal engagement bait, provide the high-drama
 version first. Optionally provide a separately labeled **high-risk bait test**
