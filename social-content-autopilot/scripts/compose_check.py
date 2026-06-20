@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validate generated post copy against each platform's hard rules before posting.
 
-This does NOT score or rank — it's a publish gate. It checks the actual text
+This does NOT score or rank — it's a validation gate. It checks the actual text
 Claude wrote for a platform and flags anything that would break or underperform:
 over the character cap, wrong hashtag count, missing hook/CTA, hashtags on
 Reddit, etc. Exit code is non-zero if any post has a blocking error.
@@ -103,7 +103,7 @@ def main(argv=None):
     report, any_fail = {}, False
     for key, post in bundle.items():
         if key.startswith("_"):
-            continue  # meta keys like _schedule are handled by publish.py
+            continue  # skip meta keys (e.g. an optional leading "_note")
         if key not in platforms:
             report[key] = {"status": "FAIL", "errors": [f"unknown platform '{key}'"],
                            "warnings": []}

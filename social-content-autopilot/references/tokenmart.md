@@ -13,7 +13,6 @@ billed through TokenMart.
 | Post generation | `generate_posts.py` | yes → tokenmart_client |
 | Competitor search | `competitor_research.py` | no (search API only) |
 | Validation | `compose_check.py` | no (local rules) |
-| Publishing | `publish.py` | no (posting API only) |
 
 If you add any new model-powered feature, it **must** import `tokenmart_client`
 and use `chat()` / `complete_json()` — never a direct provider SDK.

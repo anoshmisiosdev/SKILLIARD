@@ -5,7 +5,7 @@ All copy is written by an LLM call routed through TokenMart (tokenmart_client),
 so post generation is explicit, in-code, and provably metered through TokenMart
 rather than improvised by the agent.
 
-Output is the bundle shape consumed by compose_check.py and publish.py:
+Output is the bundle shape consumed by compose_check.py and shown in chat:
     { "<platform>": {"text": "...", "media_urls": []}, ... }
 
 Usage:
@@ -114,7 +114,7 @@ def main(argv=None):
         print(f"error: {e}", file=sys.stderr)
         return 2
 
-    # Assemble the bundle in the shape compose_check / publish expect.
+    # Assemble the bundle in the shape compose_check expects.
     bundle = {}
     for key in platforms:
         post = drafted.get(key) or {}

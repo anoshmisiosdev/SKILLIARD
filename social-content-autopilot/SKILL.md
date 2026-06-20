@@ -1,15 +1,15 @@
 ---
 name: social-content-autopilot
 description: >-
-  Automated, competitor-aware social media content creation and posting. Given a
-  product or business, it (1) researches competitors on each platform and
-  summarizes what they post, (2) writes the actual ready-to-publish posts —
-  native copy, hooks, hashtags, and CTAs — tailored to each platform
-  (X/Twitter, LinkedIn, Instagram, TikTok, YouTube Shorts, Threads, Facebook,
-  Reddit, Pinterest), (3) recommends which platforms to target, and (4)
-  auto-publishes to them via a posting API. Use when the user wants social media
-  posts written for them, wants to know what competitors are posting, wants to
-  repurpose content across platforms, or wants to schedule/auto-post content.
+  Automated, competitor-aware social media content creation. Given a product or
+  business, it (1) researches competitors on each platform and summarizes what
+  they post, (2) writes the actual ready-to-publish posts — native copy, hooks,
+  hashtags, and CTAs — tailored to each platform (X/Twitter, LinkedIn, Instagram,
+  TikTok, YouTube Shorts, Threads, Facebook, Reddit, Pinterest), and (3)
+  recommends which platforms to target. It outputs the finished posts in chat for
+  the user to copy and post themselves. Use when the user wants social media posts
+  written for them, wants to know what competitors are posting, or wants to
+  repurpose content across platforms.
 license: MIT
 allowed-tools: Read, Write, Bash, WebSearch, WebFetch
 ---
@@ -17,8 +17,8 @@ allowed-tools: Read, Write, Bash, WebSearch, WebFetch
 # Social Content Autopilot
 
 End-to-end: research competitors → write the actual posts → recommend targets →
-auto-publish. This skill produces **finished, publishable copy** (not scores) and
-can post it for the user.
+deliver the copy in chat. This skill produces **finished, publishable copy** (not
+scores); the user reviews it and posts it themselves.
 
 ## LLM usage policy (TokenMart)
 
@@ -35,13 +35,13 @@ Requires `TOKENMART_API_KEY` and `TOKENMART_BASE_URL` (OpenAI-compatible); see
 - "Write social posts for my product / launch / announcement."
 - "What are my competitors posting on [platform]?"
 - "Turn this into posts for X, LinkedIn, and TikTok."
-- "Post this for me" / "schedule this across my platforms."
+- "Repurpose this announcement across my platforms."
 
 ## Inputs to gather (ask only for what's missing)
 
 - **Product/business**: what it is, who it's for, the key message or this post's goal.
 - **Target platforms** (optional — otherwise recommend a set).
-- **Media**: are images/videos available? URLs if posting (Instagram/TikTok/Shorts need media).
+- **Media**: are images/videos available? (Instagram/TikTok/Shorts assume a visual.)
 - **Brand voice / dos & don'ts**, if any.
 
 ## Workflow
@@ -99,8 +99,8 @@ final copy yourself — generation must go through TokenMart. The result is the
 
 Review the generated copy for accuracy and brand fit before continuing.
 
-### 4. Validate before publishing
-Gate the copy against each platform's hard rules:
+### 4. Validate
+Gate the copy against each platform's hard rules before showing it:
 
 ```bash
 python scripts/compose_check.py --bundle posts.json
@@ -109,31 +109,28 @@ python scripts/compose_check.py --bundle posts.json
 Fix anything marked ✗ (FAIL) and address ▲ warnings where it helps. Re-run until
 clean.
 
-### 5. Auto-publish (with confirmation)
-Publishing is outward-facing. **Always preview first and get the user's explicit
-go-ahead.** The script is dry-run unless `--confirm` is passed.
+### 5. Deliver in chat
+Output the finished posts directly in the conversation for the user to copy and
+post themselves — this skill does not auto-publish. For each recommended
+platform, present a clear block:
 
-```bash
-python scripts/publish.py --bundle posts.json                 # preview (dry-run)
-python scripts/publish.py --bundle posts.json --confirm       # actually post
-python scripts/publish.py --bundle posts.json --platforms x,linkedin --confirm
-```
+- The **post copy** (ready to paste), plus the alternate **hook variant**.
+- Hashtags, suggested **media**, and the **best posting time** + cadence (from
+  `assets/platforms.json`).
+- A one-line note on why this platform/angle fits.
 
-Posting uses Ayrshare (`AYRSHARE_API_KEY`) which fans out to all platforms from
-one key; a `--provider webhook` option (`POST_WEBHOOK_URL`) covers custom
-backends. Add `"_schedule": "<ISO8601>"` to the bundle to schedule instead of
-posting now. See `references/publishing.md` for setup.
+Keep it scannable (one section per platform). Mention any ▲ warnings the user
+might want to address.
 
 ## Guardrails
 
-- **Never auto-post without showing the user the exact copy and getting a clear
-  yes.** Default to dry-run; only add `--confirm` after approval.
+- This skill **does not post anything** — it produces copy for the user to
+  publish. Never claim something was posted.
 - Keep claims truthful to the product; don't invent stats, reviews, or fake
   trending hashtags.
 - Respect platform ToS: research uses public search, not logged-in scraping.
-  Hashtags are omitted on Reddit; no spammy/duplicate cross-posting verbatim.
-- If credentials are missing, deliver the validated bundle and tell the user how
-  to set up keys — don't silently skip publishing.
+  Hashtags are omitted on Reddit; don't produce spammy/duplicate cross-posts.
+- All content generation must go through TokenMart (see the LLM usage policy).
 
 ## Bundled resources
 
@@ -142,11 +139,9 @@ posting now. See `references/publishing.md` for setup.
 - `scripts/competitor_research.py` — competitor query plan / SerpAPI search.
 - `scripts/summarize_competitors.py` — research → competitor brief (via TokenMart).
 - `scripts/generate_posts.py` — writes the posts bundle (via TokenMart).
-- `scripts/compose_check.py` — validates posts against platform rules (publish gate).
-- `scripts/publish.py` — auto-posts via Ayrshare/webhook; dry-run by default.
-- `assets/platforms.json` — per-platform rules, voice, timing, posting keys.
+- `scripts/compose_check.py` — validates posts against platform rules.
+- `assets/platforms.json` — per-platform rules, voice, and timing.
 - `assets/sample_posts.json` — example posts bundle shape.
 - `references/platform-profiles.md` — per-platform writing playbook.
 - `references/competitor-research.md` — research method, ToS, plugging in APIs.
-- `references/publishing.md` — credentials, scheduling, safety.
 - `references/tokenmart.md` — TokenMart setup and the all-LLM-through-TokenMart rule.
