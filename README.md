@@ -1,23 +1,18 @@
 # social-content-autopilot
 
-A single installable **Claude Code plugin** with two skills:
+A social-content skill focused on Instagram image posts, LinkedIn, and X. It
+turns verified product context into a distinct native post for each platform,
+plus a creative brief, controlled-test hook, publishing handoff, and measurement
+plan. Instagram produces only single-image or image-carousel feed posts with
+descriptions; it does not propose Reels or video.
 
-- **`social-content-autopilot`** — rewrites any input text into ready-to-post
-  copy for any social platform. The main `SKILL.md` dispatches to small
-  per-platform **format files**.
-- **`social-content-publisher`** — *actually uploads* the finished post by
-  driving the browser through the **Claude in Chrome** extension (or any other
-  browser-control capability the host model exposes). It executes a deterministic
-  per-platform publish map, so it works whether the plugin is run by Claude,
-  Codex, or another model — and always asks for explicit confirmation before the
-  final submit.
+The skill optimizes for qualified organic reach rather than promising
+“virality.” LinkedIn defaults to a high-drama, r/LinkedInLunatics-inspired
+presentation while requiring truthful proof and a substantive debate prompt.
+It avoids fabricated stories, universal posting-time claims, rigid hashtag
+quotas, direct engagement requests, and copy-paste cross-posting.
 
-Platforms: X/Twitter, LinkedIn, Instagram, TikTok, YouTube Shorts, Threads,
-Facebook, Reddit, Pinterest. **LinkedIn uses the over-the-top r/LinkedInLunatics
-influencer-broetry style.**
-
-The rewriting is done by whatever model runs the skill — no external LLM service
-or API key. The bundled scripts only do search-planning and validation.
+## Layout
 
 ## Layout (what's in the plugin zip)
 
@@ -69,39 +64,23 @@ handles passwords, 2FA, or CAPTCHAs.
 
 ## How it works
 
-1. You give it text + a target platform.
-2. It reads `formats/<platform>.md` and rewrites the text to that platform's
-   native style (hook, length, hashtags, tone, CTA).
-3. It validates the draft: `python scripts/check.py --platform <key> --text "..."`.
-4. It outputs the ready-to-paste post in chat (it never posts for you).
-
-The format files are **generated** from `assets/platforms.json`. Edit that file
-(or the styles in `build_formats.py`) and regenerate:
+## Validation
 
 ```bash
-python3 build_formats.py
+python3 skills/social-content-autopilot/scripts/check.py \
+  --platform x --text "Your draft"
+
+python3 skills/social-content-autopilot/scripts/check.py \
+  --platform instagram --text "Your caption" --media
 ```
 
-## Build the plugin zip
+`build_formats.py` regenerates only the legacy platform files and preserves the
+three curated, research-backed formats.
+
+## Build
 
 ```bash
-./build.sh        # → dist/social-content-autopilot.zip
+./build.sh
 ```
 
-The zip has `.claude-plugin/plugin.json` at its root and installs as one plugin.
-
-## Try the scripts
-
-```bash
-cd skills/social-content-autopilot
-python3 scripts/check.py --platform linkedin --text "I fired my best engineer. Best decision ever. Agree? #Leadership #Growth #Mindset"
-python3 scripts/competitor_research.py --product "AI meal-planning app" --platforms x,tiktok
-```
-
-## Optional credentials
-
-| Variable | Used by | For |
-| --- | --- | --- |
-| `SERPAPI_API_KEY` | competitor_research.py `--provider serpapi` | Run competitor searches automatically (optional) |
-
-No other keys are needed — generation uses the running model.
+The archive is written to `dist/social-content-autopilot.zip`.

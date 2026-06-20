@@ -2,7 +2,7 @@
 """Validate a single post against one platform's hard rules. No AI.
 
 Reads assets/platforms.json and checks the drafted text for that platform:
-length cap, hashtag count, media/CTA expectations. Exit code is non-zero on a
+length cap, hashtag count, media expectations, and common spam patterns. Exit code is non-zero on a
 blocking FAIL.
 
 Usage:
@@ -23,10 +23,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_CONFIG = os.path.join(HERE, "..", "assets", "platforms.json")
 
 HASHTAG_RE = re.compile(r"(?<!\w)#\w+")
-CTA_RE = re.compile(
-    r"\b(comment|share|follow|subscribe|like|save|tag|sign ?up|learn more|"
-    r"read more|link in bio|dm|reply|repost|join|download|try|get started|"
-    r"click|agree|thoughts)\b",
+ENGAGEMENT_BAIT_RE = re.compile(
+    r"\b(comment\s+(yes|below)|like\s+if|repost\s+(if|to)|share\s+this\s+to|"
+    r"tag\s+(a|someone|three|3)|follow\s+for\s+more|agree\?|"
+    r"agree\s+or\s+disagree|thoughts\?)\b",
     re.IGNORECASE,
 )
 
@@ -53,8 +53,8 @@ def check(text, has_media, p):
         errors.append(f"over hard cap: {n}/{p['max_length']} chars")
     if h_hi == 0 and n_tags > 0:
         errors.append(f"{n_tags} hashtag(s) but {p['name']} forbids them")
-    if p.get("favors_video") and not has_media:
-        errors.append("video-first platform with no media attached")
+    if p.get("requires_media") and not has_media:
+        errors.append("platform post requires a media asset")
 
     if n and n < lo:
         warnings.append(f"shorter than ideal ({n} < {lo})")
@@ -66,8 +66,13 @@ def check(text, has_media, p):
         warnings.append(f"too many hashtags ({n_tags} > {h_hi})")
     if p.get("favors_media") and not p.get("favors_video") and not has_media:
         warnings.append("favors media; consider attaching an image")
-    if p["name"] != "Reddit" and not CTA_RE.search(text):
-        warnings.append("no clear call to action detected")
+    if ENGAGEMENT_BAIT_RE.search(text):
+        warnings.append("possible generic engagement bait; use a substantive, objective-aligned CTA")
+    letters = [c for c in text if c.isalpha()]
+    if len(letters) >= 20:
+        upper_ratio = sum(c.isupper() for c in letters) / len(letters)
+        if upper_ratio > 0.45:
+            warnings.append("copy is mostly all-caps; use natural casing")
 
     status = "FAIL" if errors else ("WARN" if warnings else "PASS")
     return {"status": status, "chars": n, "max": p["max_length"],

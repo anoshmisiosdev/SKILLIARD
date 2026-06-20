@@ -1,11 +1,11 @@
 {
   "name": "social-content-autopilot",
-  "version": "0.2.0",
-  "description": "One skill that rewrites any input text into ready-to-post copy for any social platform (X, LinkedIn, Instagram, TikTok, YouTube Shorts, Threads, Facebook, Reddit, Pinterest). The main SKILL.md dispatches to per-platform format files. LinkedIn uses the r/LinkedInLunatics influencer-broetry style.",
+  "version": "0.4.0",
+  "description": "Transforms product context into researched Instagram image posts, LinkedIn posts, and X posts with creative briefs, virality hypotheses, publishing handoffs, and measurement plans.",
   "author": {
     "name": "anoshmisiosdev",
     "email": "riyananosh@gmail.com"
   },
   "license": "MIT",
-  "keywords": ["social-media", "content", "formatting", "linkedin", "marketing"]
+  "keywords": ["social-media", "content", "instagram", "linkedin", "x", "marketing"]
 }

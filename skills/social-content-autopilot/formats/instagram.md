@@ -1,27 +1,64 @@
-# Format: Instagram
+# Instagram image posts
 
-Rewrite the input text into a single ready-to-post **Instagram** post using the
-rules below. Keep the input's core message and facts; never invent stats.
+Create only feed image posts with descriptions. Do not propose Reels, video,
+Stories, live content, or an audio strategy for this project.
 
-## Hard limits (the validator enforces these)
-- **Length:** 125-600 chars (hard cap **2200**).
-- **Hashtags:** Use **5-15**, mixing broad + niche.
-- **Media:** Video-first: the text is the caption for a vertical video; write a 3-second hook.
-- **CTA:** End with one fitting call to action.
-- **Best time:** Weekdays 11am-1pm & 7-9pm local  ·  **Cadence:** 3-7 posts/week + daily stories
+Read `references/instagram-strategy.md` before drafting.
 
-## Voice
-Visual-first, aspirational, warm. The caption supports the image.
+## Choose the image format
 
-## Structure
-1. Hook in line 1 (before the '...more' cut).
-2. A few emoji-friendly lines.
-3. Hashtags at the end or first comment.
+- Use a **single image** for one striking proof point, product moment,
+  comparison, result, diagram, or emotionally legible scene.
+- Use an **image carousel** when sequence creates value: a framework, teardown,
+  checklist, before/after, mini-case study, or progressive reveal.
+- Default to a portrait feed canvas as a testable creative choice, not a ranking
+  fact. Preserve safe margins and phone readability. Keep a user-supplied aspect
+  ratio or template when specified.
 
-## Hook patterns
-- "Save this for later 📌"
-- "POV: you finally ___"
+## Build the image before the caption
 
-## Output
-Return the finished Instagram post (ready to paste) plus one alternate hook line.
-Validate with: `python scripts/check.py --platform instagram --text "<post>"`.
+1. Make the first image understandable without reading the description. Show a
+   concrete promise, tension, outcome, or visual proof.
+2. Use original assets or meaningfully transformed source material. Do not rely
+   on reposted graphics, copied quote cards, or another creator's layout.
+3. Prefer one visual idea and a clear focal point. Use text on the image only
+   when it improves comprehension; make it short, high-contrast, and readable.
+4. For carousels, give each slide one job:
+   - slide 1: audience + payoff or tension
+   - slide 2: why the problem matters
+   - middle: proof, steps, comparison, or reveal
+   - penultimate: application or product mechanism
+   - final: summary and proportionate next action
+5. Ensure every slide advances the argument. Delete filler slides.
+
+## Write the description
+
+1. Front-load a line that complements rather than repeats the image.
+2. Add context, evidence, and one useful takeaway that the visual cannot carry.
+3. Create an honest send/save reason through utility, identity, surprise,
+   reference value, or emotional resonance. Do not demand saves or shares.
+4. Use natural topic and audience keywords. Add zero to five specific hashtags;
+   treat them as labels, not a reach engine.
+5. Use one objective-aligned CTA. For traffic, state the destination clearly;
+   do not pretend a caption URL is a frictionless clickable link.
+6. Supply useful alt text describing the image's meaning, important visible
+   text, and relevant visual details.
+
+## Output additions
+
+Include:
+
+1. `single image` or `carousel` and the rationale
+2. exact image copy and composition brief
+3. slide-by-slide plan for a carousel
+4. exact description
+5. alt text
+6. the intended send/save trigger
+7. one alternate first image for a controlled test
+8. primary metric and comparison baseline
+
+If no image exists, produce a build-ready image brief and mark the post
+`not publishable: image required`.
+
+Validate the description with:
+`python scripts/check.py --platform instagram --text "<description>" --media`

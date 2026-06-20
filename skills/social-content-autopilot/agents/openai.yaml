@@ -1,0 +1,4 @@
+interface:
+  display_name: "Social Content Autopilot"
+  short_description: "Create researched Instagram, LinkedIn, and X posts"
+  default_prompt: "Use $social-content-autopilot to turn my product context into an Instagram image post, a LinkedIn post, and an X post with virality hypotheses and measurement plans."
