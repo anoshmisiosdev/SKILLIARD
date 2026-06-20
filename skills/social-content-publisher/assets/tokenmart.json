@@ -1,0 +1,45 @@
+{
+  "_comment": "TokenMart (https://thetokenmart.ai) config for generate_video.py. The API KEY is NOT stored here — it is read from the TOKENMART_API_KEY environment variable. Fill the values below from your TokenMart dashboard / API docs, then run generate_video.py with --dry-run to confirm the request shape before spending credits. Field paths use dot-notation into the JSON response (e.g. 'data.video_url').",
+
+  "base_url": "https://api.thetokenmart.ai",
+  "submit_path": "/v1/video/generations",
+  "auth_header": "Authorization",
+  "auth_prefix": "Bearer ",
+
+  "model": "bytedance/seedance-2.0",
+  "_model_note": "Confirm the exact Seedance model id string in your TokenMart model list (e.g. seedance-2.0, bytedance/seedance-1.0-pro). Override per-call with --model.",
+
+  "request_field_map": {
+    "prompt": "prompt",
+    "model": "model",
+    "image": "image_url",
+    "duration": "duration",
+    "resolution": "resolution",
+    "aspect_ratio": "aspect_ratio"
+  },
+
+  "response": {
+    "video_url_field": "data.video_url",
+    "job_id_field": "data.id"
+  },
+
+  "status": {
+    "path_template": "/v1/video/generations/{job_id}",
+    "method": "GET",
+    "state_field": "data.status",
+    "video_url_field": "data.video_url",
+    "done_values": ["succeeded", "completed", "success", "done"],
+    "failed_values": ["failed", "error", "canceled"],
+    "poll_interval_seconds": 5,
+    "timeout_seconds": 600
+  },
+
+  "platform_presets": {
+    "instagram":     { "aspect_ratio": "9:16", "resolution": "1080p", "duration": 8 },
+    "youtube_shorts":{ "aspect_ratio": "9:16", "resolution": "1080p", "duration": 10 },
+    "tiktok":        { "aspect_ratio": "9:16", "resolution": "1080p", "duration": 10 },
+    "x":             { "aspect_ratio": "16:9", "resolution": "1080p", "duration": 8 },
+    "linkedin":      { "aspect_ratio": "1:1",  "resolution": "1080p", "duration": 8 },
+    "facebook":      { "aspect_ratio": "9:16", "resolution": "1080p", "duration": 8 }
+  }
+}

@@ -1,8 +1,16 @@
 # social-content-autopilot
 
-A single installable **Claude Code plugin** with one skill that rewrites any
-input text into ready-to-post copy for any social platform. The main `SKILL.md`
-dispatches to small per-platform **format files**.
+A single installable **Claude Code plugin** with two skills:
+
+- **`social-content-autopilot`** — rewrites any input text into ready-to-post
+  copy for any social platform. The main `SKILL.md` dispatches to small
+  per-platform **format files**.
+- **`social-content-publisher`** — *actually uploads* the finished post by
+  driving the browser through the **Claude in Chrome** extension (or any other
+  browser-control capability the host model exposes). It executes a deterministic
+  per-platform publish map, so it works whether the plugin is run by Claude,
+  Codex, or another model — and always asks for explicit confirmation before the
+  final submit.
 
 Platforms: X/Twitter, LinkedIn, Instagram, TikTok, YouTube Shorts, Threads,
 Facebook, Reddit, Pinterest. **LinkedIn uses the over-the-top r/LinkedInLunatics
@@ -34,7 +42,30 @@ skills/
     │   └── competitor_research.py  # optional competitor search-query plan / SerpAPI
     ├── assets/platforms.json       # per-platform limits/voice/timing (source of truth)
     └── references/competitor-research.md
+└── social-content-publisher/
+    ├── SKILL.md                    # uploads via Claude in Chrome (model-agnostic)
+    ├── scripts/prepare_upload.py   # validates content + emits the browser upload plan (no posting)
+    ├── assets/publish_map.json     # per-platform composer URL + semantic upload steps
+    └── references/browser-control.md
 ```
+
+## Publishing with Claude in Chrome
+
+The `social-content-publisher` skill turns a finished post into an ordered
+**upload plan** and executes it against your *logged-in* browser tab via the
+Claude in Chrome extension (or a browser MCP / computer-use):
+
+```bash
+cd skills/social-content-publisher
+python3 scripts/prepare_upload.py --platform x --text "<final post>"
+python3 scripts/prepare_upload.py --platform reddit --title "..." --subreddit r/startups --text "..."
+python3 scripts/prepare_upload.py --platform instagram --text "<caption>" --media ./hero.png
+```
+
+The script never posts — it only validates and prints the steps. The running
+model performs them and **must get your explicit confirmation before the final
+submit click**. You must already be signed in to the platform; the skill never
+handles passwords, 2FA, or CAPTCHAs.
 
 ## How it works
 

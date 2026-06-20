@@ -1,0 +1,166 @@
+{
+  "_comment": "Per-platform browser-publish map. Source of truth for the social-content-publisher skill. Composer URLs change and selectors drift, so steps are described SEMANTICALLY (what to find/do on the page) rather than as brittle CSS — this is how Claude in Chrome and other vision/DOM browser tools operate. Always require an explicit human confirmation before the final submit step.",
+  "x": {
+    "name": "X / Twitter",
+    "entry_url": "https://x.com/compose/post",
+    "requires_media": false,
+    "requires_login": true,
+    "compose_steps": [
+      "Open entry_url. If a login wall appears, stop and tell the user to sign in to the X account in this Chrome profile first.",
+      "Locate the main 'Post text' editor (the contenteditable area that says 'What is happening?!').",
+      "Type or paste the post text into it.",
+      "If media is provided, click the image/media button in the composer toolbar and attach the file from media_path.",
+      "Wait until any media upload progress completes."
+    ],
+    "submit": {
+      "label": "the 'Post' button (top-right of the composer)",
+      "confirm_before": true
+    },
+    "verify": "After posting, confirm the composer closed and the new post appears at the top of the user's profile/timeline."
+  },
+  "linkedin": {
+    "name": "LinkedIn",
+    "entry_url": "https://www.linkedin.com/feed/",
+    "requires_media": false,
+    "requires_login": true,
+    "compose_steps": [
+      "Open entry_url. If not logged in, stop and ask the user to sign in.",
+      "Click 'Start a post' to open the share dialog.",
+      "Paste the post text into the dialog editor.",
+      "If media is provided, click the photo/video icon at the bottom of the dialog and attach media_path; wait for the preview to render."
+    ],
+    "submit": {
+      "label": "the blue 'Post' button (bottom-right of the share dialog)",
+      "confirm_before": true
+    },
+    "verify": "Confirm the dialog closed and a 'Post successful' toast appeared or the post shows at the top of the feed."
+  },
+  "instagram": {
+    "name": "Instagram",
+    "entry_url": "https://www.instagram.com/",
+    "requires_media": true,
+    "requires_login": true,
+    "compose_steps": [
+      "Open entry_url. If not logged in, stop and ask the user to sign in.",
+      "Click the 'Create' (+) button in the left nav, then 'Post'.",
+      "In the 'Create new post' dialog click 'Select from computer' and choose media_path (image or video — Instagram web requires a visual).",
+      "Click 'Next' through the crop and edit screens (accept defaults unless the user specified otherwise).",
+      "On the caption screen, paste the post text into the caption field."
+    ],
+    "submit": {
+      "label": "the 'Share' button (top-right of the caption screen)",
+      "confirm_before": true
+    },
+    "verify": "Confirm the 'Your post has been shared' screen appears."
+  },
+  "tiktok": {
+    "name": "TikTok",
+    "entry_url": "https://www.tiktok.com/upload",
+    "requires_media": true,
+    "requires_login": true,
+    "compose_steps": [
+      "Open entry_url. If not logged in, stop and ask the user to sign in.",
+      "Click 'Select video' / the upload dropzone and choose media_path (a video is required).",
+      "Wait for the upload + processing to finish (the preview thumbnail appears).",
+      "Paste the post text into the caption box."
+    ],
+    "submit": {
+      "label": "the 'Post' button (bottom of the upload form)",
+      "confirm_before": true
+    },
+    "verify": "Confirm the 'Your video is being uploaded'/success modal appears, then it routes to the profile."
+  },
+  "youtube_shorts": {
+    "name": "YouTube Shorts",
+    "entry_url": "https://www.youtube.com/upload",
+    "requires_media": true,
+    "requires_login": true,
+    "compose_steps": [
+      "Open entry_url (Studio upload). If not logged in, stop and ask the user to sign in and pick the right channel.",
+      "Click 'Select files' and choose media_path (a vertical video <= 60s to qualify as a Short).",
+      "On the 'Details' step put a title (first line of the post text) and paste the rest into the description; ensure '#Shorts' is present.",
+      "Set 'Made for kids' per the user's instruction (do NOT guess — ask if unset), then click 'Next' through Video elements and Checks.",
+      "On 'Visibility', pick the visibility the user asked for (default to the channel's usual; ask if unset)."
+    ],
+    "submit": {
+      "label": "the 'Publish' button (Visibility step)",
+      "confirm_before": true
+    },
+    "verify": "Confirm the 'Video published' dialog with the share link appears."
+  },
+  "threads": {
+    "name": "Threads",
+    "entry_url": "https://www.threads.net/",
+    "requires_media": false,
+    "requires_login": true,
+    "compose_steps": [
+      "Open entry_url. If not logged in, stop and ask the user to sign in.",
+      "Click 'Start a thread...' / the compose button to open the composer.",
+      "Paste the post text into the composer.",
+      "If media is provided, click the attach-media icon and choose media_path."
+    ],
+    "submit": {
+      "label": "the 'Post' button (bottom-right of the composer)",
+      "confirm_before": true
+    },
+    "verify": "Confirm the composer closed and the thread appears at the top of the profile."
+  },
+  "facebook": {
+    "name": "Facebook",
+    "entry_url": "https://www.facebook.com/",
+    "requires_media": false,
+    "requires_login": true,
+    "compose_steps": [
+      "Open entry_url. If not logged in, stop and ask the user to sign in.",
+      "Click the \"What's on your mind?\" box to open the 'Create post' dialog.",
+      "Confirm with the user WHICH audience/timeline or Page this should post to before continuing.",
+      "Paste the post text into the dialog.",
+      "If media is provided, click 'Photo/video' and attach media_path; wait for the preview."
+    ],
+    "submit": {
+      "label": "the blue 'Post' button (bottom of the dialog)",
+      "confirm_before": true
+    },
+    "verify": "Confirm the dialog closed and the post shows at the top of the feed/Page."
+  },
+  "reddit": {
+    "name": "Reddit",
+    "entry_url": "https://www.reddit.com/submit",
+    "requires_media": false,
+    "requires_login": true,
+    "needs_extra": ["subreddit", "title"],
+    "compose_steps": [
+      "Open entry_url. If not logged in, stop and ask the user to sign in.",
+      "In 'Choose a community' type and select the target subreddit (REQUIRED — ask the user if not provided; respect each subreddit's self-promo rules).",
+      "Pick the correct tab: 'Text' for a self post, 'Images & Video' if media is provided, 'Link' for a URL.",
+      "Put the title into the Title field (REQUIRED).",
+      "Paste the body text into the body editor (no hashtags, no salesy CTA — Reddit norm).",
+      "If media is provided, attach media_path on the Images & Video tab."
+    ],
+    "submit": {
+      "label": "the 'Post' button (bottom-right of the submit form)",
+      "confirm_before": true
+    },
+    "verify": "Confirm it routes to the new post's permalink page."
+  },
+  "pinterest": {
+    "name": "Pinterest",
+    "entry_url": "https://www.pinterest.com/pin-builder/",
+    "requires_media": true,
+    "requires_login": true,
+    "needs_extra": ["title", "destination_link"],
+    "compose_steps": [
+      "Open entry_url. If not logged in, stop and ask the user to sign in.",
+      "Click the upload area and choose media_path (an image/video is required).",
+      "Put the title into the 'Title' field (first line of the post text).",
+      "Paste the rest of the post text into the 'Description' field.",
+      "If the user provided a destination link, put it in the 'Add a destination link' field.",
+      "Select the board the user named (ask if unset)."
+    ],
+    "submit": {
+      "label": "the red 'Publish' button (top-right)",
+      "confirm_before": true
+    },
+    "verify": "Confirm the 'Your Pin is published' confirmation / it routes to the Pin."
+  }
+}
