@@ -100,6 +100,10 @@ def chat(prompt, *, system=None, model=None, temperature=0.7,
     req = urllib.request.Request(base + "/chat/completions", data=data, method="POST")
     req.add_header("Content-Type", "application/json")
     req.add_header("Authorization", f"Bearer {key}")
+    # Some gateways sit behind Cloudflare, which blocks the default urllib
+    # User-Agent (HTTP 403 / error 1010). Send a conventional UA + Accept.
+    req.add_header("User-Agent", "social-content-autopilot/1.0")
+    req.add_header("Accept", "application/json")
     try:
         with urllib.request.urlopen(req, timeout=120) as resp:
             body = json.load(resp)
