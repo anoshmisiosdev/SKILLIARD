@@ -1,47 +1,51 @@
 #!/usr/bin/env bash
-# Validate and package the skill into a distributable .zip.
+# Package the whole thing as ONE installable Claude Code plugin .zip.
+# The archive has .claude-plugin/plugin.json at its ROOT plus the skills/ tree.
 set -euo pipefail
 
-SKILL_DIR="${1:-social-content-autopilot}"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$ROOT"
+
+MANIFEST=".claude-plugin/plugin.json"
 DIST_DIR="dist"
 
-if [[ ! -d "$SKILL_DIR" ]]; then
-  echo "error: skill directory '$SKILL_DIR' not found" >&2
-  exit 1
-fi
+# --- Validate manifest + skills ---------------------------------------------
+[[ -f "$MANIFEST" ]] || { echo "error: $MANIFEST missing" >&2; exit 1; }
+python3 -c "import json,sys; d=json.load(open('$MANIFEST')); sys.exit(0 if d.get('name') else 1)" \
+  || { echo "error: $MANIFEST must be valid JSON with a 'name'" >&2; exit 1; }
+PLUGIN_NAME="$(python3 -c "import json; print(json.load(open('$MANIFEST'))['name'])")"
 
-SKILL_MD="$SKILL_DIR/SKILL.md"
-if [[ ! -f "$SKILL_MD" ]]; then
-  echo "error: $SKILL_MD is missing (every skill needs a SKILL.md)" >&2
-  exit 1
-fi
+shopt -s nullglob
+for skill_md in skills/*/SKILL.md; do
+  head -1 "$skill_md" | grep -q '^---$' || { echo "error: $skill_md missing frontmatter" >&2; exit 1; }
+  grep -q '^name:' "$skill_md"        || { echo "error: $skill_md missing 'name:'" >&2; exit 1; }
+  grep -q '^description:' "$skill_md"  || { echo "error: $skill_md missing 'description:'" >&2; exit 1; }
+done
 
-# --- Validate frontmatter ---------------------------------------------------
-header="$(awk 'NR==1{if($0!="---"){print "NOFM"; exit}} NR>1{if($0=="---") exit; print}' "$SKILL_MD")"
-if [[ "$header" == "NOFM" ]]; then
-  echo "error: $SKILL_MD must start with a '---' YAML frontmatter block" >&2
-  exit 1
-fi
-if ! grep -q '^name:' "$SKILL_MD"; then
-  echo "error: frontmatter is missing required 'name:' field" >&2
-  exit 1
-fi
-if ! grep -q '^description:' "$SKILL_MD"; then
-  echo "error: frontmatter is missing required 'description:' field" >&2
-  exit 1
-fi
-if grep -qi 'REPLACE ME' "$SKILL_MD"; then
-  echo "warning: SKILL.md still contains placeholder text ('REPLACE ME')" >&2
-fi
-
-# --- Package ----------------------------------------------------------------
+# --- Stage a clean copy and zip from its root -------------------------------
 mkdir -p "$DIST_DIR"
-ZIP_PATH="$DIST_DIR/$(basename "$SKILL_DIR").zip"
+ZIP_PATH="$ROOT/$DIST_DIR/${PLUGIN_NAME}.zip"
 rm -f "$ZIP_PATH"
 
-# Exclude junk; zip the folder so it unpacks as my-skill/SKILL.md
-zip -r -X "$ZIP_PATH" "$SKILL_DIR" \
-  -x '*/.DS_Store' '*/__pycache__/*' '*.pyc' >/dev/null
+STAGE="$(mktemp -d)"
+trap 'rm -rf "$STAGE"' EXIT
+cp -R .claude-plugin "$STAGE"/
+cp -R skills "$STAGE"/
+[[ -f README.md ]] && cp README.md "$STAGE"/
+find "$STAGE" \( -name '.env' -o -name '.env.local' -o -name '.DS_Store' -o -name '*.pyc' \) -delete
+find "$STAGE" -name '__pycache__' -type d -prune -exec rm -rf {} +
+
+zip_args=(.claude-plugin skills)
+[[ -f "$STAGE/README.md" ]] && zip_args+=(README.md)
+( cd "$STAGE" && zip -r -X "$ZIP_PATH" "${zip_args[@]}" >/dev/null )
+
+# --- Safety checks (capture listing once; piping into grep -q races on SIGPIPE)
+listing="$(unzip -l "$ZIP_PATH")"
+grep -q '\.claude-plugin/plugin.json' <<<"$listing" \
+  || { echo "error: zip missing .claude-plugin/plugin.json at root" >&2; rm -f "$ZIP_PATH"; exit 1; }
+if grep -qE '/\.env($|[^.])|(^| )\.env$' <<<"$listing"; then
+  echo "error: a real .env leaked into the zip — aborting" >&2; rm -f "$ZIP_PATH"; exit 1
+fi
 
 echo "✓ Built $ZIP_PATH"
-unzip -l "$ZIP_PATH"
+echo "$listing"

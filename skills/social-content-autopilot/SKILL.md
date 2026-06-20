@@ -1,147 +1,76 @@
 ---
 name: social-content-autopilot
 description: >-
-  Automated, competitor-aware social media content creation. Given a product or
-  business, it (1) researches competitors on each platform and summarizes what
-  they post, (2) writes the actual ready-to-publish posts — native copy, hooks,
-  hashtags, and CTAs — tailored to each platform (X/Twitter, LinkedIn, Instagram,
-  TikTok, YouTube Shorts, Threads, Facebook, Reddit, Pinterest), and (3)
-  recommends which platforms to target. It outputs the finished posts in chat for
-  the user to copy and post themselves. Use when the user wants social media posts
-  written for them, wants to know what competitors are posting, or wants to
-  repurpose content across platforms.
+  Rewrite any input text into ready-to-post copy for any social platform —
+  X/Twitter, LinkedIn, Instagram, TikTok, YouTube Shorts, Threads, Facebook,
+  Reddit, and Pinterest. The skill loads a small per-platform format file and
+  adapts the hook, length, hashtags, tone, and CTA to that platform's native
+  style (LinkedIn uses the over-the-top r/LinkedInLunatics influencer-broetry
+  style), then outputs the finished post. Use when the user wants a post written
+  or reformatted for one or more platforms, or wants to repurpose content across
+  platforms.
 license: MIT
-allowed-tools: Read, Write, Bash, WebSearch, WebFetch
+allowed-tools: Read, Bash, WebSearch, WebFetch
 ---
 
 # Social Content Autopilot
 
-End-to-end: research competitors → write the actual posts → recommend targets →
-deliver the copy in chat. This skill produces **finished, publishable copy** (not
-scores); the user reviews it and posts it themselves.
+One skill. Give it text and a target platform; it loads that platform's **format
+file** and returns ready-to-post copy. **You (the model running this skill) do the
+rewriting** — guided by the format files below. There is no external AI service;
+the bundled scripts only do search-planning and validation.
 
-## LLM usage policy (TokenMart)
+## Platform → format file
 
-**All LLM/content generation in this skill MUST go through TokenMart** via
-`scripts/tokenmart_client.py`. Do not draft the final posts or competitor
-summaries yourself inline — call `generate_posts.py` and `summarize_competitors.py`,
-which route every model call through TokenMart so usage is centrally metered.
-Requires `TOKENMART_API_KEY` and `TOKENMART_BASE_URL` (OpenAI-compatible); see
-`references/tokenmart.md`. Verify connectivity once with
-`python scripts/tokenmart_client.py --ping`.
+Read the matching file and follow it **exactly** when rewriting:
 
-## When to use
-
-- "Write social posts for my product / launch / announcement."
-- "What are my competitors posting on [platform]?"
-- "Turn this into posts for X, LinkedIn, and TikTok."
-- "Repurpose this announcement across my platforms."
-
-## Inputs to gather (ask only for what's missing)
-
-- **Product/business**: what it is, who it's for, the key message or this post's goal.
-- **Target platforms** (optional — otherwise recommend a set).
-- **Media**: are images/videos available? (Instagram/TikTok/Shorts assume a visual.)
-- **Brand voice / dos & don'ts**, if any.
+| Platform | Format file |
+| --- | --- |
+| X / Twitter | `formats/x.md` |
+| LinkedIn | `formats/linkedin.md` *(r/LinkedInLunatics broetry style)* |
+| Instagram | `formats/instagram.md` |
+| TikTok | `formats/tiktok.md` |
+| YouTube Shorts | `formats/youtube-shorts.md` |
+| Threads | `formats/threads.md` |
+| Facebook | `formats/facebook.md` |
+| Reddit | `formats/reddit.md` |
+| Pinterest | `formats/pinterest.md` |
 
 ## Workflow
 
-### 1. Competitor research
-Find who the product competes with on each platform and what's working.
-
-```bash
-python scripts/competitor_research.py --product "<what it is>" \
-  --keywords "<niche,terms>" --platforms x,instagram,tiktok
-```
-
-This prints a **search-query plan**. Execute those queries with **WebSearch /
-WebFetch** (or run with `--provider serpapi` if `SERPAPI_API_KEY` is set) and
-save the collected results as JSON. Then turn them into a competitor brief — the
-summarization runs through TokenMart, not inline:
-
-```bash
-python scripts/summarize_competitors.py --research research.json \
-  --product "<what it is>" --out competitor_brief.json
-```
-
-The brief lists top competitors per platform (angle, formats, hashtags, cadence)
-and content gaps to exploit. See `references/competitor-research.md` for method
-and ToS limits — never scrape behind logins or violate platform terms.
-
-### 2. Recommend target platforms
-Based on where competitors are active, the product's format (visual vs. text),
-and the user's goal, recommend the **2-3 platforms** to focus on and say why.
-Concentration beats spraying everywhere.
-
-### 3. Write the actual posts (via TokenMart)
-Generate finished, platform-native copy by calling `generate_posts.py`, which
-routes the writing through TokenMart and emits the posts bundle directly:
-
-```bash
-python scripts/generate_posts.py \
-  --product "<what it is>" --platforms x,linkedin,tiktok \
-  --goal "<what this post should achieve>" \
-  --brief competitor_brief.json \
-  --media '{"tiktok":["https://.../clip.mp4"]}' \
-  --out posts.json
-```
-
-It enforces each platform's hook/length/tone/hashtag rules from
-`assets/platforms.json`, differentiates from the competitor brief, and returns a
-`text` (+ `hook_variant` for A/B testing) per platform. Do not hand-write the
-final copy yourself — generation must go through TokenMart. The result is the
-**posts bundle** (`assets/sample_posts.json` shows the shape):
-
-```json
-{ "x": {"text": "...", "media_urls": []},
-  "linkedin": {"text": "...", "media_urls": ["https://.../img.png"]} }
-```
-
-Review the generated copy for accuracy and brand fit before continuing.
-
-### 4. Validate
-Gate the copy against each platform's hard rules before showing it:
-
-```bash
-python scripts/compose_check.py --bundle posts.json
-```
-
-Fix anything marked ✗ (FAIL) and address ▲ warnings where it helps. Re-run until
-clean.
-
-### 5. Deliver in chat
-Output the finished posts directly in the conversation for the user to copy and
-post themselves — this skill does not auto-publish. For each recommended
-platform, present a clear block:
-
-- The **post copy** (ready to paste), plus the alternate **hook variant**.
-- Hashtags, suggested **media**, and the **best posting time** + cadence (from
-  `assets/platforms.json`).
-- A one-line note on why this platform/angle fits.
-
-Keep it scannable (one section per platform). Mention any ▲ warnings the user
-might want to address.
+1. **Get the inputs** (ask only for what's missing):
+   - The text/idea to post.
+   - Target platform(s). If none given, recommend a sensible 2-3 and say why.
+   - Whether an image/video is available (TikTok/Shorts/Instagram assume a visual).
+2. **(Optional) competitor research** — to make the copy land, see what
+   competitors do: `python scripts/competitor_research.py --product "<x>"
+   --platforms <list>` then run the printed searches with WebSearch/WebFetch and
+   summarize. See `references/competitor-research.md`. Skip if not needed.
+3. **Rewrite per platform** — for each target, **READ `formats/<platform>.md`**
+   and follow it to produce the post (hook, length, hashtags, tone, CTA). Keep
+   the input's core message and facts; never invent stats or fake hashtags.
+4. **Validate** each draft against the platform's hard rules:
+   ```bash
+   python scripts/check.py --platform <key> --text "<your post>"   # --media if a visual is attached
+   ```
+   Platform keys: `x, linkedin, instagram, tiktok, youtube_shorts, threads,
+   facebook, reddit, pinterest`. Fix any ✗ FAIL; address ▲ warnings where useful.
+5. **Deliver in chat**, ready to paste. For each platform show: the post, one
+   alternate hook, hashtags/media note, and best posting time. Don't post anything.
 
 ## Guardrails
 
-- This skill **does not post anything** — it produces copy for the user to
-  publish. Never claim something was posted.
-- Keep claims truthful to the product; don't invent stats, reviews, or fake
-  trending hashtags.
-- Respect platform ToS: research uses public search, not logged-in scraping.
-  Hashtags are omitted on Reddit; don't produce spammy/duplicate cross-posts.
-- All content generation must go through TokenMart (see the LLM usage policy).
+- Output copy for the user to publish — never claim something was posted.
+- Keep claims truthful to the product. The LinkedIn "lunatic" style satirizes the
+  *form* (broetry, humble-brag, engagement bait) — never fabricate facts about
+  the product.
+- Reddit gets no hashtags and no salesy CTA; respect each platform's norms.
+- Research uses public search only — no logged-in scraping.
 
 ## Bundled resources
 
-- `scripts/tokenmart_client.py` — **the single LLM chokepoint**; all model calls
-  route through TokenMart here. `--ping` to check connectivity.
-- `scripts/competitor_research.py` — competitor query plan / SerpAPI search.
-- `scripts/summarize_competitors.py` — research → competitor brief (via TokenMart).
-- `scripts/generate_posts.py` — writes the posts bundle (via TokenMart).
-- `scripts/compose_check.py` — validates posts against platform rules.
-- `assets/platforms.json` — per-platform rules, voice, and timing.
-- `assets/sample_posts.json` — example posts bundle shape.
-- `references/platform-profiles.md` — per-platform writing playbook.
+- `formats/*.md` — per-platform writing rules (generated from `assets/platforms.json`).
+- `scripts/check.py` — validates a post against a platform's rules (no AI).
+- `scripts/competitor_research.py` — optional competitor search-query plan / SerpAPI.
+- `assets/platforms.json` — per-platform limits, voice, and timing (source of truth).
 - `references/competitor-research.md` — research method, ToS, plugging in APIs.
-- `references/tokenmart.md` — TokenMart setup and the all-LLM-through-TokenMart rule.

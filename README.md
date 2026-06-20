@@ -1,89 +1,76 @@
 # social-content-autopilot
 
-A [Claude Agent Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)
-that runs the social content pipeline for a product: **research competitors →
-write the actual posts → recommend platforms → output the copy in chat.**
-
-## What it does
-
-1. **Competitor research** — scoped public search (WebSearch/WebFetch or SerpAPI)
-   to find who you compete with on each platform and what they post.
-2. **Writes real, ready-to-post copy** per platform — native hook, length, tone,
-   hashtags, and CTA. Not a score; the finished posts.
-3. **Recommends target platforms** based on competitor presence and product fit.
-4. **Delivers the posts in chat** for you to review and post yourself — it does
-   not auto-publish.
+A single installable **Claude Code plugin** with one skill that rewrites any
+input text into ready-to-post copy for any social platform. The main `SKILL.md`
+dispatches to small per-platform **format files**.
 
 Platforms: X/Twitter, LinkedIn, Instagram, TikTok, YouTube Shorts, Threads,
-Facebook, Reddit, Pinterest.
+Facebook, Reddit, Pinterest. **LinkedIn uses the over-the-top r/LinkedInLunatics
+influencer-broetry style.**
 
-## Layout
+The rewriting is done by whatever model runs the skill — no external LLM service
+or API key. The bundled scripts only do search-planning and validation.
+
+## Layout (what's in the plugin zip)
 
 ```
-social-content-autopilot/
-├── SKILL.md                       # The workflow Claude follows
-├── scripts/
-│   ├── tokenmart_client.py        # single LLM chokepoint — all model calls route here
-│   ├── competitor_research.py     # competitor query plan / SerpAPI search
-│   ├── summarize_competitors.py   # research -> competitor brief (via TokenMart)
-│   ├── generate_posts.py          # write the posts bundle (via TokenMart)
-│   └── compose_check.py           # validate posts vs platform rules
-├── assets/
-│   ├── platforms.json             # per-platform rules, voice, timing
-│   └── sample_posts.json          # example posts-bundle shape
-└── references/
-    ├── platform-profiles.md       # per-platform writing playbook
-    ├── competitor-research.md      # research method, ToS, plugging in APIs
-    └── tokenmart.md               # TokenMart setup; all-LLM-through-TokenMart rule
+.claude-plugin/
+└── plugin.json                     # plugin manifest (zip root)
+skills/
+└── social-content-autopilot/
+    ├── SKILL.md                    # the one skill: dispatches to format files
+    ├── formats/
+    │   ├── x.md
+    │   ├── linkedin.md             # r/LinkedInLunatics broetry style
+    │   ├── instagram.md
+    │   ├── tiktok.md
+    │   ├── youtube-shorts.md
+    │   ├── threads.md
+    │   ├── facebook.md
+    │   ├── reddit.md
+    │   └── pinterest.md
+    ├── scripts/
+    │   ├── check.py                # validate a post vs a platform's rules (no AI)
+    │   └── competitor_research.py  # optional competitor search-query plan / SerpAPI
+    ├── assets/platforms.json       # per-platform limits/voice/timing (source of truth)
+    └── references/competitor-research.md
 ```
 
-## Try the scripts
+## How it works
+
+1. You give it text + a target platform.
+2. It reads `formats/<platform>.md` and rewrites the text to that platform's
+   native style (hook, length, hashtags, tone, CTA).
+3. It validates the draft: `python scripts/check.py --platform <key> --text "..."`.
+4. It outputs the ready-to-paste post in chat (it never posts for you).
+
+The format files are **generated** from `assets/platforms.json`. Edit that file
+(or the styles in `build_formats.py`) and regenerate:
 
 ```bash
-cd social-content-autopilot
-
-# 1. Competitor research (prints a search-query plan for Claude to run)
-python3 scripts/competitor_research.py \
-  --product "AI meal-planning app for busy parents" \
-  --keywords "meal prep,family dinner" --platforms x,instagram,tiktok
-
-# 2. Generate posts via TokenMart (needs TOKENMART_* set; see below)
-python3 scripts/generate_posts.py \
-  --product "AI meal-planning app for busy parents" \
-  --platforms x,linkedin --goal "drive beta signups" --out posts.json
-
-# 3. Validate the generated posts against platform rules
-python3 scripts/compose_check.py --bundle posts.json
+python3 build_formats.py
 ```
 
-## Credentials
-
-| Variable | Used by | For |
-| --- | --- | --- |
-| `TOKENMART_API_KEY` | tokenmart_client.py (all generation) | **Required** — all LLM usage routes through TokenMart |
-| `TOKENMART_BASE_URL` | tokenmart_client.py | TokenMart endpoint, OpenAI-compatible (e.g. `https://model.service-inference.ai/v1`) |
-| `TOKENMART_MODEL` | tokenmart_client.py | Optional default model id (override with `--model`) |
-| `SERPAPI_API_KEY` | competitor_research.py `--provider serpapi` | Execute searches automatically (optional) |
-
-Put these in a git-ignored `.env` (see `.env.example`); `tokenmart_client.py`
-auto-loads it. **All LLM/content generation goes through TokenMart** (the only
-model egress, so nothing bypasses it). Verify with
-`python3 scripts/tokenmart_client.py --ping`. Without `SERPAPI_API_KEY` the skill
-still does research-planning, generation, and validation.
-
-## Build a distributable .zip
+## Build the plugin zip
 
 ```bash
 ./build.sh        # → dist/social-content-autopilot.zip
 ```
 
-Upload the zip on claude.ai (Settings → Capabilities → Skills), or copy the
-`social-content-autopilot/` folder into `~/.claude/skills/` (all projects) or
-`<repo>/.claude/skills/` (one project).
+The zip has `.claude-plugin/plugin.json` at its root and installs as one plugin.
 
-## Notes
+## Try the scripts
 
-- This skill **does not post anything** — it outputs finished copy for you to
-  publish. No platform write-access or posting credentials are needed.
-- Research uses public search only — no logged-in scraping.
-- Secrets live in `.env` (git-ignored); never commit real keys.
+```bash
+cd skills/social-content-autopilot
+python3 scripts/check.py --platform linkedin --text "I fired my best engineer. Best decision ever. Agree? #Leadership #Growth #Mindset"
+python3 scripts/competitor_research.py --product "AI meal-planning app" --platforms x,tiktok
+```
+
+## Optional credentials
+
+| Variable | Used by | For |
+| --- | --- | --- |
+| `SERPAPI_API_KEY` | competitor_research.py `--provider serpapi` | Run competitor searches automatically (optional) |
+
+No other keys are needed — generation uses the running model.

@@ -6,6 +6,11 @@
 # Build output
 dist/
 
+# Generated run artifacts (not part of the skill)
+**/research.json
+**/posts.json
+**/competitor_brief.json
+
 # Python
 __pycache__/
 *.pyc
