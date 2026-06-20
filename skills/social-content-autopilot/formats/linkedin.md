@@ -1,34 +1,77 @@
-# Format: LinkedIn
+# LinkedIn
 
-Rewrite the input text into a single ready-to-post **LinkedIn** post using the
-rules below. Keep the input's core message and facts; never invent stats.
+Default to **high-drama practitioner mode**, inspired by the recognizable form
+catalogued in r/LinkedInLunatics: a disruptive opener, staccato pacing, narrative
+tension, a hard pivot to a professional lesson, and an ending that invites a
+position. Keep the substance credible even when the presentation is theatrical.
 
-## Hard limits (the validator enforces these)
-- **Length:** 900-1800 chars (hard cap **3000**).
-- **Hashtags:** Use **3-5**, mixing broad + niche.
-- **Media:** Favors an image — recommend attaching one.
-- **CTA:** End with one fitting call to action.
-- **Best time:** Tue-Thu 8-10am local  ·  **Cadence:** 3-5 posts/week
+Read `references/linkedin-lunatics.md` before drafting this mode.
 
-## Voice
-Full r/LinkedInLunatics influencer mode. Sincere-sounding engagement bait. Broetry. Humble-brag wrapped in fake vulnerability. Inspirational to the point of parody — but keep it coherent and on-message for the product.
+## High-drama structure
 
-Emoji: a tasteful sprinkle (🚀 💡 🙏 👇 ♻️). Hashtags are buzzwords (#Leadership #Growth #Mindset #Hustle #Grateful). Never be mean or untruthful about the actual product — satirize the FORM, not the facts.
+1. Open with a jarring but true confession, counterintuitive result, sharp
+   opinion, or high-stakes contrast. Make the first two lines earn expansion.
+2. Use one short sentence or fragment per paragraph for the opening 3-6 beats.
+   Use whitespace for pacing, then switch to denser paragraphs or bullets when
+   explaining the substance. Do not turn every line into broetry.
+3. Build a miniature story from a verified event, product decision, failure,
+   customer observation, or experiment supplied by the user.
+4. Insert a pattern-interrupt pivot such as “That is not the interesting part”
+   or “The lesson was not about the feature.” Avoid copying these verbatim when
+   a more specific line fits.
+5. Deliver one concrete professional lesson, framework, or tradeoff. Include
+   proof early enough that the hook does not feel deceptive.
+6. Stack 2-4 short takeaways only when each adds information. Parallel phrasing
+   is useful; empty inspiration is not.
+7. Connect the product after the insight. Make it the mechanism or example, not
+   a surprise sales pitch.
+8. End with a **debate prompt** that resembles engagement bait but requires a
+   meaningful answer: ask which tradeoff the reader would choose, where the
+   argument fails, or what their experience contradicts. “Agree?” may be used
+   only when the preceding claim is specific and contestable; prefer “Where do
+   you disagree?” or a two-sided professional choice.
 
-## Structure
-1. BROETRY: one short sentence per line. A blank line between almost every line. White space is the whole aesthetic.
-2. Open with a jarring confession or flex disguised as vulnerability ("I fired my best employee today." / "I cried in the parking lot.").
-3. Tell a tiny parable: a chance encounter (an Uber driver, a barista, a 7-year-old, a janitor, a homeless man) drops profound business wisdom. It probably never happened. That’s fine.
-4. Hard pivot to a Leadership / Growth / Mindset / Hustle lesson.
-5. Stack 2-4 ultra-short affirmations. ('Rejection is redirection.')
-6. Drop ONE humble-brag metric, then dismiss it ("We hit $4M ARR. But that’s not the point.").
-7. End with blatant engagement bait: 'Agree?' / 'Thoughts? 👇' / 'Repost ♻️ if this resonated.'
+## Reach and credibility rules
 
-## Hook patterns
-- "I fired my top performer.\n\nBest decision I ever made."
-- "A homeless man asked me for $1.\n\nWhat he said next changed my business forever."
-- "Got rejected 47 times.\n\nThen everything changed."
+- Create tension from a real tradeoff, not ragebait or a fabricated villain.
+- Never invent a firing, rejection, child, driver, barista, customer, revenue
+  number, emotional confession, or “everyone clapped” moment.
+- Do not explicitly request likes, follows, reposts, tags, or “comment YES.”
+  LinkedIn identifies those as engagement bait that may not receive broader
+  recommendation.
+- Do not use engagement pods, coordinated comments, unrelated tags, fake
+  scarcity, or a controversy unrelated to the product.
+- Use zero to three precise hashtags only when useful. Do not append generic
+  `#Leadership`, `#Growth`, or `#Mindset` filler.
+- Ask for a provocative variant only by intensifying a defensible opinion. Do
+  not make the claim less accurate.
 
-## Output
-Return the finished LinkedIn post (ready to paste) plus one alternate hook line.
-Validate with: `python scripts/check.py --platform linkedin --text "<post>"`.
+## Format selection
+
+- Use text for a focused story or argument.
+- Use a native document/carousel for a stepwise framework or teardown.
+- Use native video for a demonstration or person-led explanation.
+- Use an image for evidence, contrast, or a result. Do not add media without a
+  job.
+
+Include an external link when it serves the objective; do not repeat folklore
+that links are always suppressed.
+
+## Output additions
+
+Include:
+
+1. exact post
+2. a **drama dial** from 1-5; default to 4
+3. one alternate opening with a different tension mechanism
+4. the verified fact supporting the hook
+5. the debate prompt and why a qualified reader can answer it
+6. primary analytics: out-of-network reach plus the objective-specific metric
+
+If the user explicitly asks for maximal engagement bait, provide the high-drama
+version first. Optionally provide a separately labeled **high-risk bait test**
+using “Agree or disagree?”—never direct engagement requests—and warn that the
+platform says engagement bait may reduce broader recommendation.
+
+Validate with:
+`python scripts/check.py --platform linkedin --text "<post>"`

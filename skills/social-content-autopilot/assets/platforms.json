@@ -1,56 +1,39 @@
 {
   "x": {
     "name": "X / Twitter",
-    "ideal_length": [
-      80,
-      240
-    ],
+    "ideal_length": [1, 280],
     "max_length": 280,
-    "hashtag_range": [
-      0,
-      2
-    ],
-    "favors_media": true,
+    "hashtag_range": [0, 1],
+    "favors_media": false,
     "favors_video": false,
     "tone": "punchy, conversational, opinionated; one idea per post",
-    "best_times": "Weekdays 9-11am & 6-9pm local",
-    "cadence": "1-5 posts/day",
-    "search_domain": "twitter.com"
+    "best_times": "derive from account analytics; otherwise test an audience-active window",
+    "cadence": "derive from quality capacity and account analytics",
+    "search_domain": "x.com"
   },
   "linkedin": {
     "name": "LinkedIn",
-    "ideal_length": [
-      900,
-      1800
-    ],
+    "ideal_length": [1, 3000],
     "max_length": 3000,
-    "hashtag_range": [
-      3,
-      5
-    ],
-    "favors_media": true,
+    "hashtag_range": [0, 3],
+    "favors_media": false,
     "favors_video": false,
     "tone": "professional, narrative; first 2 lines must hook before 'see more'",
-    "best_times": "Tue-Thu 8-10am local",
-    "cadence": "3-5 posts/week",
+    "best_times": "derive from account analytics; otherwise test an audience-active window",
+    "cadence": "favor consistent, useful posts; derive frequency from account analytics",
     "search_domain": "linkedin.com"
   },
   "instagram": {
     "name": "Instagram",
-    "ideal_length": [
-      125,
-      600
-    ],
+    "ideal_length": [1, 2200],
     "max_length": 2200,
-    "hashtag_range": [
-      5,
-      15
-    ],
+    "hashtag_range": [0, 5],
+    "requires_media": true,
     "favors_media": true,
     "favors_video": true,
-    "tone": "visual-first, aspirational, emoji-friendly",
-    "best_times": "Weekdays 11am-1pm & 7-9pm local",
-    "cadence": "3-7 posts/week + daily stories",
+    "tone": "visual-first, audience-specific, original, and useful",
+    "best_times": "derive from Instagram Insights; otherwise test an audience-active window",
+    "cadence": "use personalized Professional Dashboard guidance and account analytics",
     "search_domain": "instagram.com"
   },
   "tiktok": {

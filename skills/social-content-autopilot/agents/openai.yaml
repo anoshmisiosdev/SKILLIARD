@@ -1,0 +1,4 @@
+interface:
+  display_name: "Social Content Autopilot"
+  short_description: "Create native Instagram, LinkedIn, and X posts"
+  default_prompt: "Use $social-content-autopilot to turn my product context into platform-native Instagram, LinkedIn, and X publishing packets."

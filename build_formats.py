@@ -6,8 +6,9 @@ small format files generated here (skills/social-content-autopilot/formats/*.md)
 Each format file tells the running model how to rewrite input text into a
 ready-to-post post for that platform.
 
-Source of truth: skills/social-content-autopilot/assets/platforms.json.
-Re-run after editing platforms.json or the STYLES below.
+Source of truth for legacy platform files:
+skills/social-content-autopilot/assets/platforms.json. Instagram, LinkedIn, and X
+are research-backed curated files and are intentionally not generated here.
 
 Usage:
     python3 build_formats.py
@@ -22,6 +23,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SKILL = os.path.join(HERE, "skills", "social-content-autopilot")
 PLATFORMS = os.path.join(SKILL, "assets", "platforms.json")
 OUT = os.path.join(SKILL, "formats")
+CURATED = {"x", "linkedin", "instagram"}
 
 
 def slug(key: str) -> str:
@@ -184,6 +186,8 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     written = []
     for key, p in platforms.items():
+        if key in CURATED:
+            continue
         if key not in STYLES:
             print(f"warning: no STYLES entry for '{key}', skipping")
             continue
@@ -191,7 +195,8 @@ def main():
         with open(path, "w", encoding="utf-8") as fh:
             fh.write(format_md(key, p))
         written.append(f"formats/{slug(key)}.md")
-    print(f"Generated {len(written)} format files:")
+    print(f"Preserved curated files: {', '.join(sorted(CURATED))}")
+    print(f"Generated {len(written)} legacy format files:")
     for w in written:
         print(f"  - {w}")
 

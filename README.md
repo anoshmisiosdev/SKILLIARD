@@ -1,76 +1,54 @@
 # social-content-autopilot
 
-A single installable **Claude Code plugin** with one skill that rewrites any
-input text into ready-to-post copy for any social platform. The main `SKILL.md`
-dispatches to small per-platform **format files**.
+A social-content skill focused on Instagram, LinkedIn, and X. It turns verified
+product context into a distinct native post for each platform, plus a creative
+brief, controlled-test hook, publishing handoff, and measurement plan.
 
-Platforms: X/Twitter, LinkedIn, Instagram, TikTok, YouTube Shorts, Threads,
-Facebook, Reddit, Pinterest. **LinkedIn uses the over-the-top r/LinkedInLunatics
-influencer-broetry style.**
+The skill optimizes for qualified organic reach rather than promising
+“virality.” LinkedIn defaults to a high-drama, r/LinkedInLunatics-inspired
+presentation while requiring truthful proof and a substantive debate prompt.
+It avoids fabricated stories, universal posting-time claims, rigid hashtag
+quotas, direct engagement requests, and copy-paste cross-posting.
 
-The rewriting is done by whatever model runs the skill — no external LLM service
-or API key. The bundled scripts only do search-planning and validation.
+## Layout
 
-## Layout (what's in the plugin zip)
-
-```
-.claude-plugin/
-└── plugin.json                     # plugin manifest (zip root)
-skills/
-└── social-content-autopilot/
-    ├── SKILL.md                    # the one skill: dispatches to format files
-    ├── formats/
-    │   ├── x.md
-    │   ├── linkedin.md             # r/LinkedInLunatics broetry style
-    │   ├── instagram.md
-    │   ├── tiktok.md
-    │   ├── youtube-shorts.md
-    │   ├── threads.md
-    │   ├── facebook.md
-    │   ├── reddit.md
-    │   └── pinterest.md
-    ├── scripts/
-    │   ├── check.py                # validate a post vs a platform's rules (no AI)
-    │   └── competitor_research.py  # optional competitor search-query plan / SerpAPI
-    ├── assets/platforms.json       # per-platform limits/voice/timing (source of truth)
-    └── references/competitor-research.md
+```text
+skills/social-content-autopilot/
+├── SKILL.md
+├── agents/openai.yaml
+├── formats/
+│   ├── instagram.md
+│   ├── linkedin.md
+│   └── x.md
+├── references/
+│   ├── platform-research.md
+│   └── competitor-research.md
+├── scripts/
+│   ├── check.py
+│   └── competitor_research.py
+└── assets/platforms.json
 ```
 
-## How it works
+The repository still contains legacy format files for other platforms, but the
+current skill scope and maintained strategy are Instagram, LinkedIn, and X.
 
-1. You give it text + a target platform.
-2. It reads `formats/<platform>.md` and rewrites the text to that platform's
-   native style (hook, length, hashtags, tone, CTA).
-3. It validates the draft: `python scripts/check.py --platform <key> --text "..."`.
-4. It outputs the ready-to-paste post in chat (it never posts for you).
-
-The format files are **generated** from `assets/platforms.json`. Edit that file
-(or the styles in `build_formats.py`) and regenerate:
+## Validation
 
 ```bash
-python3 build_formats.py
+python3 skills/social-content-autopilot/scripts/check.py \
+  --platform x --text "Your draft"
+
+python3 skills/social-content-autopilot/scripts/check.py \
+  --platform instagram --text "Your caption" --media
 ```
 
-## Build the plugin zip
+`build_formats.py` regenerates only the legacy platform files and preserves the
+three curated, research-backed formats.
+
+## Build
 
 ```bash
-./build.sh        # → dist/social-content-autopilot.zip
+./build.sh
 ```
 
-The zip has `.claude-plugin/plugin.json` at its root and installs as one plugin.
-
-## Try the scripts
-
-```bash
-cd skills/social-content-autopilot
-python3 scripts/check.py --platform linkedin --text "I fired my best engineer. Best decision ever. Agree? #Leadership #Growth #Mindset"
-python3 scripts/competitor_research.py --product "AI meal-planning app" --platforms x,tiktok
-```
-
-## Optional credentials
-
-| Variable | Used by | For |
-| --- | --- | --- |
-| `SERPAPI_API_KEY` | competitor_research.py `--provider serpapi` | Run competitor searches automatically (optional) |
-
-No other keys are needed — generation uses the running model.
+The archive is written to `dist/social-content-autopilot.zip`.
