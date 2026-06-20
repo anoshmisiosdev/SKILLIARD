@@ -1,0 +1,11 @@
+{
+  "x": {
+    "text": "Most meal-planning apps fail busy parents in one way:\n\nThey assume you have time to cook.\n\nWe built around 15-min dinners your kids will actually eat.\n\nWhat's the one meal your family never says no to?",
+    "media_urls": []
+  },
+  "linkedin": {
+    "text": "We studied 200 families to learn why meal-planning apps get abandoned by week 3.\n\nThe answer wasn't recipes. It was time.\n\nEvery competitor optimized for variety. Parents don't want variety on a Tuesday at 6pm — they want a 15-minute dinner that doesn't start a fight.\n\nSo we rebuilt the whole experience around three constraints: under 15 minutes, 5 ingredients, kid-approved.\n\nEarly result: 3x higher week-4 retention.\n\nIf you're building for busy parents, optimize for their hardest moment, not their ideal one.\n\nWhat constraint does your product design around?",
+    "media_urls": ["https://example.com/retention-chart.png"]
+  },
+  "_schedule": "2026-06-21T14:00:00Z"
+}

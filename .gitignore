@@ -1,0 +1,11 @@
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+
+# Python
+__pycache__/
+*.pyc
