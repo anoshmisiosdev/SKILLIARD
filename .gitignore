@@ -2,9 +2,11 @@
 .env
 .env.*
 !.env.example
+.botlearn
 
 # Build output
 dist/
+skills/botlearn
 
 # Generated run artifacts (not part of the skill)
 **/research.json
