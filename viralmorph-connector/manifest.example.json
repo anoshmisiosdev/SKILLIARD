@@ -1,0 +1,72 @@
+{
+  "_comment": "OPTIONAL future packaging as a Claude Desktop Extension (.mcpb). Not required for the hackathon MVP. Build with `npm run build`, then `npx @anthropic-ai/mcpb pack` after renaming this to manifest.json. See https://github.com/anthropics/mcpb for the current schema.",
+  "manifest_version": "0.2",
+  "name": "viralmorph-connector",
+  "display_name": "ViralMorph Connector",
+  "version": "0.1.0",
+  "description": "Turn one raw context block into platform-native posts for Instagram, LinkedIn, and X, then stage/publish them with local browser automation.",
+  "long_description": "ViralMorph is a local MCP connector (not a web app). It generates platform-native social posts from a single context block and uses Playwright with your own persistent browser session to stage and — only after explicit confirmation — publish your own posts. It never uses social media APIs, never asks for passwords, and never automates engagement.",
+  "author": {
+    "name": "ViralMorph Hackathon Team"
+  },
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"],
+      "env": {
+        "LLM_PROVIDER": "${user_config.llm_provider}",
+        "ANTHROPIC_API_KEY": "${user_config.anthropic_api_key}",
+        "OPENAI_API_KEY": "${user_config.openai_api_key}",
+        "BROWSER_BACKEND": "${user_config.browser_backend}",
+        "BROWSER_PROFILE_DIR": "${__dirname}/browser_profiles/default",
+        "BROWSER_HEADLESS": "false"
+      }
+    }
+  },
+  "user_config": {
+    "llm_provider": {
+      "type": "string",
+      "title": "Generation mode",
+      "description": "mock | host | anthropic | openai",
+      "default": "mock",
+      "required": false
+    },
+    "browser_backend": {
+      "type": "string",
+      "title": "Browser backend",
+      "description": "claude_in_chrome (default, uses the Claude-in-Chrome extension) | playwright",
+      "default": "claude_in_chrome",
+      "required": false
+    },
+    "anthropic_api_key": {
+      "type": "string",
+      "title": "Anthropic API key (optional)",
+      "description": "Only needed when generation mode is 'anthropic'.",
+      "sensitive": true,
+      "required": false
+    },
+    "openai_api_key": {
+      "type": "string",
+      "title": "OpenAI API key (optional)",
+      "description": "Only needed when generation mode is 'openai'.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    { "name": "generate_social_posts", "description": "Generate platform-native posts from one context block." },
+    { "name": "get_draft", "description": "Retrieve a saved draft by id." },
+    { "name": "update_platform_post", "description": "Edit one platform's post before staging." },
+    { "name": "regenerate_platform_post", "description": "Regenerate one platform's post from feedback." },
+    { "name": "stage_all_posts", "description": "Stage every platform in one prompt (no per-post confirmation)." },
+    { "name": "stage_post_in_browser", "description": "Stage one platform's post (never auto-publishes)." },
+    { "name": "publish_all_staged", "description": "Publish all staged posts after one confirmation." },
+    { "name": "publish_staged_post", "description": "Publish one staged post after explicit confirmation." },
+    { "name": "copy_post_to_clipboard", "description": "Copy a platform post to the clipboard as a fallback." },
+    { "name": "get_browser_status", "description": "Report the browser automation state." }
+  ],
+  "keywords": ["mcp", "social", "playwright", "automation", "content"]
+}

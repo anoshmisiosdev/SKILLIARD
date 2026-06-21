@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+
+# Local browser session data (cookies/session live here ONLY — never commit)
+browser_profiles/*
+!browser_profiles/.gitkeep
+
+# Locally generated drafts
+data/drafts/*
+!data/drafts/.gitkeep
+
+# OS / editor noise
+.DS_Store
+*.log
