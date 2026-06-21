@@ -3,6 +3,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { BrowserStatus } from "../types/postPlan.js";
 import { getBrowserStatusShape } from "../types/toolSchemas.js";
 import { state } from "../browser/browserContext.js";
+import { browserBackend } from "../browser/backend.js";
 import { textResult } from "./shared.js";
 
 export function registerGetBrowserStatus(server: McpServer): void {
@@ -25,7 +26,15 @@ export function registerGetBrowserStatus(server: McpServer): void {
         staged_post_ready: state.stagedPostReady,
         last_error: state.lastError,
       };
-      return textResult(status);
+      return textResult({
+        ...status,
+        backend: browserBackend(),
+        staged_platforms: state.stagedPlatforms,
+        note:
+          browserBackend() === "claude_in_chrome"
+            ? "Backend is claude_in_chrome: ViralMorph does not drive a browser itself — the host AI uses Claude-in-Chrome to execute the returned plans, so browser_open reflects only ViralMorph's (unused) Playwright window."
+            : "Backend is playwright: ViralMorph drives its own Chromium window.",
+      });
     }
   );
 }

@@ -15,6 +15,8 @@ import {
   detectLogin,
   waitForLogin,
   loginWaitMs,
+  markStaged,
+  markPublished,
 } from "./browserContext.js";
 
 export async function stageXPost(postText: string): Promise<StageResult> {
@@ -76,8 +78,7 @@ export async function stageXPost(postText: string): Promise<StageResult> {
     await composer.fill("").catch(() => {});
     await composer.pressSequentially(postText, { delay: 5 });
 
-    state.stagedPostReady = true;
-    state.stagedPlatform = "x";
+    markStaged("x");
     state.currentStep = "staged";
     return {
       status: "staged",
@@ -121,8 +122,7 @@ export async function publishXPost(): Promise<PublishResult> {
     await button.click();
     await page.waitForTimeout(2500); // let the request fire / toast appear
 
-    state.stagedPostReady = false;
-    state.stagedPlatform = "";
+    markPublished("x");
     state.currentStep = "published";
     return {
       status: "published",

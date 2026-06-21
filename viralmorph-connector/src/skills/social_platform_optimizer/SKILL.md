@@ -104,6 +104,14 @@ Plus a `global_strategy` (`core_angle`, `primary_emotion`, `target_action`, `ris
 
 ---
 
+## Browser execution (Claude in Chrome by default)
+
+ViralMorph stages/publishes through **Claude in Chrome** by default (`BROWSER_BACKEND=claude_in_chrome`). The connector does not drive a browser itself in this mode — its stage/publish tools return an ordered **plan** + the exact **post_text**, and the host AI executes them with its Claude-in-Chrome tools (navigate, screenshot, find, form_input/computer, file_upload) in the user's real Chrome. This gives real cursor movement and screenshots.
+
+- Prefer `stage_all_posts` to stage every platform in one prompt, executing all plans in order **without per-post confirmation**.
+- Keep exactly **one** confirmation gate: ask once before publishing, then call `publish_all_staged` with a confirmation containing "confirm" and "publish".
+- `BROWSER_BACKEND=playwright` is the fallback when the Claude-in-Chrome tools aren't available; then ViralMorph drives its own Chromium.
+
 ## Hard boundary (automation)
 
 This skill only ever helps **create, stage, and (with explicit human approval) publish the user's own post**. It must never automate likes, comments, follows, DMs, reposts, scraping, mass mentions, profile visits, or any engagement farming. Always include a preview/review step and require explicit confirmation before the final publish click.

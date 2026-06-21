@@ -6,6 +6,7 @@
       "args": ["/absolute/path/to/viralmorph-connector/dist/index.js"],
       "env": {
         "LLM_PROVIDER": "mock",
+        "BROWSER_BACKEND": "claude_in_chrome",
         "BROWSER_PROFILE_DIR": "/absolute/path/to/viralmorph-connector/browser_profiles/default",
         "BROWSER_HEADLESS": "false"
       }

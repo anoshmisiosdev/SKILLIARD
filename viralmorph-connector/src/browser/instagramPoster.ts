@@ -20,6 +20,8 @@ import {
   detectLogin,
   waitForLogin,
   loginWaitMs,
+  markStaged,
+  markPublished,
 } from "./browserContext.js";
 import { copyToClipboard } from "./clipboard.js";
 
@@ -119,8 +121,7 @@ export async function stageInstagramPost(caption: string, mediaPaths: string[] =
     await captionBox.click();
     await captionBox.pressSequentially(caption, { delay: 3 });
 
-    state.stagedPostReady = true;
-    state.stagedPlatform = "instagram";
+    markStaged("instagram");
     state.currentStep = "staged";
     return {
       status: "staged",
@@ -171,8 +172,7 @@ export async function publishInstagramPost(): Promise<PublishResult> {
     await button.click();
     await page.waitForTimeout(3000);
 
-    state.stagedPostReady = false;
-    state.stagedPlatform = "";
+    markPublished("instagram");
     state.currentStep = "published";
     return {
       status: "published",

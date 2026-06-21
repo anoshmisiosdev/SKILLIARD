@@ -19,10 +19,13 @@ import { registerGetDraft } from "./tools/getDraft.js";
 import { registerUpdatePlatformPost } from "./tools/updatePlatformPost.js";
 import { registerRegeneratePlatformPost } from "./tools/regeneratePlatformPost.js";
 import { registerStagePostInBrowser } from "./tools/stagePostInBrowser.js";
+import { registerStageAllPosts } from "./tools/stageAllPosts.js";
 import { registerPublishStagedPost } from "./tools/publishStagedPost.js";
+import { registerPublishAllStaged } from "./tools/publishAllStaged.js";
 import { registerCopyPostToClipboard } from "./tools/copyPostToClipboard.js";
 import { registerGetBrowserStatus } from "./tools/getBrowserStatus.js";
 import { closeBrowser } from "./browser/browserContext.js";
+import { browserBackend } from "./browser/backend.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, "..");
@@ -53,20 +56,43 @@ function log(...args: unknown[]): void {
   console.error("[viralmorph]", ...args);
 }
 
+/** Server-level guidance surfaced to the host AI (Claude Desktop / Code). */
+const SERVER_INSTRUCTIONS = `ViralMorph turns one context block into platform-native posts for Instagram, LinkedIn, and X, then helps stage and publish them.
+
+BROWSER EXECUTION — use Claude in Chrome by default:
+- ViralMorph does NOT drive a browser itself in the default mode. The stage/publish tools return an ordered "plan" plus the exact "post_text".
+- You MUST execute those plans with your Claude-in-Chrome tools (navigate, screenshot, find, form_input/computer, file_upload) in the user's REAL Chrome — real cursor + screenshots. Do not use any other browser, and do not fall back to a different automation unless the user explicitly asks.
+- If the Claude-in-Chrome tools are unavailable, tell the user, and only then suggest setting BROWSER_BACKEND=playwright.
+
+ONE PROMPT, ALL THREE POSTS:
+- To stage, prefer stage_all_posts — it returns one plan per platform. Execute them ALL in order in a single turn. Do NOT pause for confirmation between platforms.
+- Type each post_text verbatim, screenshot each staged post, and never click the final Post/Share during staging.
+
+PUBLISHING (the only confirmation gate):
+- After staging everything, show the user the screenshots and ask ONCE whether to publish.
+- If they approve, call publish_all_staged with a confirmation that contains both "confirm" and "publish". That single confirmation covers all platforms — no per-post confirmation.
+
+SAFETY: only ever create/stage/publish the user's OWN post. Never automate likes, comments, follows, DMs, reposts, scraping, mass mentions, or engagement. Instagram needs a photo/video (pass media_paths).`;
+
 async function main(): Promise<void> {
   await loadEnvFile();
 
-  const server = new McpServer({
-    name: "viralmorph",
-    version: "0.1.0",
-  });
+  const server = new McpServer(
+    {
+      name: "viralmorph",
+      version: "0.1.0",
+    },
+    { instructions: SERVER_INSTRUCTIONS }
+  );
 
   registerGenerateSocialPosts(server);
   registerGetDraft(server);
   registerUpdatePlatformPost(server);
   registerRegeneratePlatformPost(server);
   registerStagePostInBrowser(server);
+  registerStageAllPosts(server);
   registerPublishStagedPost(server);
+  registerPublishAllStaged(server);
   registerCopyPostToClipboard(server);
   registerGetBrowserStatus(server);
 
@@ -80,7 +106,9 @@ async function main(): Promise<void> {
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  log(`ready. provider=${process.env.LLM_PROVIDER ?? "mock"} (8 tools registered)`);
+  log(
+    `ready. provider=${process.env.LLM_PROVIDER ?? "mock"} backend=${browserBackend()} (10 tools registered)`
+  );
 }
 
 main().catch((err) => {

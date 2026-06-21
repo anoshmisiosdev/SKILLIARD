@@ -95,8 +95,24 @@ export interface Draft {
 
 // --- Browser automation result shapes (match the tool output schemas) ---
 
+/** One step the host AI executes with its Claude-in-Chrome tools. */
+export interface ChromeStep {
+  action:
+    | "navigate"
+    | "screenshot"
+    | "wait_for_login"
+    | "find_and_focus"
+    | "upload_media"
+    | "type"
+    | "verify"
+    | "click_publish"
+    | "note";
+  detail: string;
+}
+
 export type StageStatus =
   | "staged"
+  | "use_claude_in_chrome"
   | "login_required"
   | "manual_fallback_required"
   | "error";
@@ -107,9 +123,13 @@ export interface StageResult {
   message: string;
   requires_final_confirmation: boolean;
   manual_instructions: string[];
+  /** Present in Claude-in-Chrome mode: the exact text the host should type. */
+  post_text?: string;
+  /** Present in Claude-in-Chrome mode: ordered steps for the host to execute. */
+  plan?: ChromeStep[];
 }
 
-export type PublishStatus = "published" | "manual_fallback_required" | "error";
+export type PublishStatus = "published" | "use_claude_in_chrome" | "manual_fallback_required" | "error";
 
 export interface PublishResult {
   status: PublishStatus;
@@ -117,6 +137,8 @@ export interface PublishResult {
   message: string;
   post_url: string;
   manual_instructions: string[];
+  /** Present in Claude-in-Chrome mode: ordered steps for the host to execute. */
+  plan?: ChromeStep[];
 }
 
 export interface BrowserStatus {

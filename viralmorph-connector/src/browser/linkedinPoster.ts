@@ -14,6 +14,8 @@ import {
   detectLogin,
   waitForLogin,
   loginWaitMs,
+  markStaged,
+  markPublished,
 } from "./browserContext.js";
 
 export async function stageLinkedInPost(postText: string): Promise<StageResult> {
@@ -70,8 +72,7 @@ export async function stageLinkedInPost(postText: string): Promise<StageResult> 
     await composer.click();
     await composer.pressSequentially(postText, { delay: 3 });
 
-    state.stagedPostReady = true;
-    state.stagedPlatform = "linkedin";
+    markStaged("linkedin");
     state.currentStep = "staged";
     return {
       status: "staged",
@@ -115,8 +116,7 @@ export async function publishLinkedInPost(): Promise<PublishResult> {
     await button.click();
     await page.waitForTimeout(2500);
 
-    state.stagedPostReady = false;
-    state.stagedPlatform = "";
+    markPublished("linkedin");
     state.currentStep = "published";
     return {
       status: "published",

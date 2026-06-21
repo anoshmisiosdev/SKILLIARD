@@ -22,8 +22,8 @@ export interface BrowserState {
   currentStep: string;
   waitingForLogin: boolean;
   stagedPostReady: boolean;
-  /** Which platform currently has content staged (for publish step). */
-  stagedPlatform: Platform | "";
+  /** Which platforms currently have content staged (for the publish step). */
+  stagedPlatforms: Platform[];
   lastError: string;
 }
 
@@ -33,9 +33,22 @@ export const state: BrowserState = {
   currentStep: "idle",
   waitingForLogin: false,
   stagedPostReady: false,
-  stagedPlatform: "",
+  stagedPlatforms: [],
   lastError: "",
 };
+
+/** Record that a platform's post is staged (Playwright or Claude-in-Chrome). */
+export function markStaged(platform: Platform): void {
+  if (!state.stagedPlatforms.includes(platform)) state.stagedPlatforms.push(platform);
+  state.stagedPostReady = state.stagedPlatforms.length > 0;
+  state.currentPlatform = platform;
+}
+
+/** Record that a platform's post was published; drop it from the staged set. */
+export function markPublished(platform: Platform): void {
+  state.stagedPlatforms = state.stagedPlatforms.filter((p) => p !== platform);
+  state.stagedPostReady = state.stagedPlatforms.length > 0;
+}
 
 let context: BrowserContext | null = null;
 let page: Page | null = null;
@@ -67,6 +80,7 @@ export async function getContext(): Promise<BrowserContext> {
   context.on("close", () => {
     state.browserOpen = false;
     state.stagedPostReady = false;
+    state.stagedPlatforms = [];
     state.currentStep = "closed";
     context = null;
     page = null;
@@ -145,6 +159,6 @@ export async function closeBrowser(): Promise<void> {
   page = null;
   state.browserOpen = false;
   state.stagedPostReady = false;
-  state.stagedPlatform = "";
+  state.stagedPlatforms = [];
   state.currentStep = "closed";
 }

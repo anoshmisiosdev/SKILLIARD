@@ -93,6 +93,34 @@ export const stagePostInBrowserShape = {
   include_link: z.boolean().optional().default(true).describe("Append the draft link to the post copy if present."),
 };
 
+export const stageAllPostsShape = {
+  draft_id: z.string().min(1),
+  platforms: z
+    .array(PLATFORM_ENUM)
+    .optional()
+    .describe("Which platforms to stage in one go. Defaults to every platform present in the draft."),
+  use_thread_for_x: z.boolean().optional().default(false),
+  media_paths: z
+    .array(z.string())
+    .optional()
+    .default([])
+    .describe("Media file paths for the Instagram post (absolute paths)."),
+  include_link: z.boolean().optional().default(true),
+};
+
+export const publishAllStagedShape = {
+  confirmation: z
+    .string()
+    .min(1)
+    .describe(
+      "Must contain both 'confirm' and 'publish'. ONE confirmation authorizes publishing every currently-staged post."
+    ),
+  platforms: z
+    .array(PLATFORM_ENUM)
+    .optional()
+    .describe("Which staged platforms to publish. Defaults to every currently-staged platform."),
+};
+
 export const publishStagedPostShape = {
   platform: PLATFORM_ENUM,
   confirmation: z

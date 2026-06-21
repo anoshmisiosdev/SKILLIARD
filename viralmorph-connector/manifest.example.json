@@ -20,6 +20,7 @@
         "LLM_PROVIDER": "${user_config.llm_provider}",
         "ANTHROPIC_API_KEY": "${user_config.anthropic_api_key}",
         "OPENAI_API_KEY": "${user_config.openai_api_key}",
+        "BROWSER_BACKEND": "${user_config.browser_backend}",
         "BROWSER_PROFILE_DIR": "${__dirname}/browser_profiles/default",
         "BROWSER_HEADLESS": "false"
       }
@@ -31,6 +32,13 @@
       "title": "Generation mode",
       "description": "mock | host | anthropic | openai",
       "default": "mock",
+      "required": false
+    },
+    "browser_backend": {
+      "type": "string",
+      "title": "Browser backend",
+      "description": "claude_in_chrome (default, uses the Claude-in-Chrome extension) | playwright",
+      "default": "claude_in_chrome",
       "required": false
     },
     "anthropic_api_key": {
@@ -53,8 +61,10 @@
     { "name": "get_draft", "description": "Retrieve a saved draft by id." },
     { "name": "update_platform_post", "description": "Edit one platform's post before staging." },
     { "name": "regenerate_platform_post", "description": "Regenerate one platform's post from feedback." },
-    { "name": "stage_post_in_browser", "description": "Open a real browser and stage the post (never auto-publishes)." },
-    { "name": "publish_staged_post", "description": "Publish the staged post after explicit confirmation." },
+    { "name": "stage_all_posts", "description": "Stage every platform in one prompt (no per-post confirmation)." },
+    { "name": "stage_post_in_browser", "description": "Stage one platform's post (never auto-publishes)." },
+    { "name": "publish_all_staged", "description": "Publish all staged posts after one confirmation." },
+    { "name": "publish_staged_post", "description": "Publish one staged post after explicit confirmation." },
     { "name": "copy_post_to_clipboard", "description": "Copy a platform post to the clipboard as a fallback." },
     { "name": "get_browser_status", "description": "Report the browser automation state." }
   ],
